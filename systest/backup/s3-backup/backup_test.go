@@ -287,8 +287,6 @@ func runBackup(t *testing.T, numExpectedFiles, numExpectedDirs int, backupAlphaS
 func runBackupInternal(t *testing.T, forceFull bool, numExpectedFiles,
 	numExpectedDirs int, backupAlphaSocketAddrHttp string) []string {
 
-	fmt.Println("*****************1] Entered the backup")
-
 	//Flushing the fileList array.
 	//Flushing the directoryList array.
 	fileList = []string{}
@@ -358,15 +356,10 @@ func runBackupInternal(t *testing.T, forceFull bool, numExpectedFiles,
 
 	files := RemoveDuplicateDirectories(fileList)
 	dirs := RemoveDuplicateDirectories(directoryList)
-	
-	fmt.Println("*****************files: ", files)
-	fmt.Println("*****************dirs: ", dirs)
 
 	require.Equal(t, numExpectedFiles, len(files)-2)
 
 	require.Equal(t, numExpectedDirs, len(dirs)-2)
-
-	fmt.Println("*****************2] Exiting the backup")
 
 	return dirs
 }
@@ -388,8 +381,6 @@ func RemoveDuplicateDirectories(s []string) []string {
 }
 
 func runRestore(t *testing.T, lastDir string, restoreAlphaAddr string, isIncremental bool, backupNum int) string {
-
-	fmt.Println("*****************3] Entered the restore")
 
 	var restoreRequest string
 	S3Config := getEnvs()
@@ -436,13 +427,11 @@ func runRestore(t *testing.T, lastDir string, restoreAlphaAddr string, isIncreme
 	//require.Equal(t, "Success", testutil.JsonGet(data, "data", "restore", "code").(string))
 	receivedcode := testutil.JsonGet(data, "data", "restore", "code").(string)
 
-	fmt.Println("*****************4] Exiting the restore")
 	//Waiting for 2 seconds, allowing restore to finish, since restore dosen't give us taskID and data is small
 	//For larger data/payload, please increase the waiting time.
 
 	time.Sleep(5 * time.Second)
 
-	fmt.Println("*****************5] 5 sec sleep finished before exiting restore")
 
 	return receivedcode
 }
@@ -458,8 +447,6 @@ func dirSetup(t *testing.T) {
 }
 
 func dirCleanup(t *testing.T) {
-
-	fmt.Println("*****Cleaning the folder now.", folderNameForCurrentTest)
 
 	S3Config := getEnvs()
 
@@ -503,8 +490,6 @@ func exitErrorf(msg string, args ...interface{}) {
 }
 
 func createBackupFolder(t *testing.T, dir string) {
-
-	fmt.Println("*****Creating a backup folder on S3", dir)
 
 	S3Config := getEnvs()
 
