@@ -345,7 +345,7 @@ func runBackupInternal(t *testing.T, forceFull bool, numExpectedFiles,
 	// List all the folders in the bucket.
 	s3resp, s3err := s3client.ListObjectsV2(&s3.ListObjectsV2Input{Bucket: aws.String(S3Config[2]), Prefix: aws.String(folderNameForCurrentTest + "/")})
 	if s3err != nil {
-		fmt.Println("------------------------>Unable to list items in bucket :-", err)
+		fmt.Println("------------------------>Unable to list items in bucket :-", s3err)
 	}
 
 	for _, item := range s3resp.Contents {
@@ -359,6 +359,9 @@ func runBackupInternal(t *testing.T, forceFull bool, numExpectedFiles,
 
 	files := RemoveDuplicateDirectories(fileList)
 	dirs := RemoveDuplicateDirectories(directoryList)
+	
+	fmt.Println("*****************files: ", files)
+	fmt.Println("*****************dirs: ", dirs)
 
 	require.Equal(t, numExpectedFiles, len(files)-2)
 
