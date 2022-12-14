@@ -330,12 +330,11 @@ func runBackupInternal(t *testing.T, forceFull bool, numExpectedFiles,
 	taskId := testutil.JsonGet(data, "data", "backup", "taskId").(string)
 	testutil.WaitForTask(t, taskId, true, backupAlphaSocketAddrHttp)
 
-	sess, err := session.NewSessionWithOptions(session.Options{
-		Profile: "default",
-		Config: aws.Config{
-			Region: aws.String(S3Config[3]),
-		},
-	})
+	sess, _ := session.NewSession(&aws.Config{
+		Region:                        aws.String(S3Config[3]),
+		CredentialsChainVerboseErrors: aws.Bool(true)},
+	)
+	
 	if err != nil {
 		fmt.Println("------------------------------>failed to create a new aws session: ", sess)
 	}
@@ -471,7 +470,8 @@ func dirCleanup(t *testing.T) {
 	//Cleanup the s3 too
 
 	sess, _ := session.NewSession(&aws.Config{
-		Region: aws.String(S3Config[3])},
+		Region:                        aws.String(S3Config[3]),
+		CredentialsChainVerboseErrors: aws.Bool(true)},
 	)
 
 	// Create S3 service client
@@ -506,10 +506,10 @@ func createBackupFolder(t *testing.T, dir string) {
 
 	fmt.Println("*****Creating a backup folder on S3", dir)
 
-	MapIGet := getEnvs()
+	S3Config := getEnvs()
 
 	sess, _ := session.NewSession(&aws.Config{
-		Region:                        aws.String(MapIGet[3]),
+		Region:                        aws.String(S3Config[3]),
 		CredentialsChainVerboseErrors: aws.Bool(true)},
 	)
 
@@ -525,7 +525,7 @@ func createBackupFolder(t *testing.T, dir string) {
 	upFile.Read(fileBuffer)
 
 	_, err = s3.New(sess).PutObject(&s3.PutObjectInput{
-		Bucket:               aws.String(MapIGet[2]),
+		Bucket:               aws.String(S3Config[2]),
 		Key:                  aws.String(dir + "/test.txt"),
 		Body:                 bytes.NewReader(fileBuffer),
 		ContentLength:        aws.Int64(fileSize),
